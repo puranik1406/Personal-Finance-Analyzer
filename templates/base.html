@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{% block title %}Private Finance Analyzer | Local AI Dashboard{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="{{ url_for('static', path='css/style.css') }}" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error": "#ffffff",
+                      "surface": "#f7f9fb",
+                      "on-secondary-fixed": "#0b1c30",
+                      "on-tertiary-fixed-variant": "#005236",
+                      "on-background": "#191c1e",
+                      "surface-container-high": "#e6e8ea",
+                      "on-primary": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "surface-container-highest": "#e0e3e5",
+                      "on-surface-variant": "#45464d",
+                      "inverse-primary": "#bec6e0",
+                      "secondary": "#505f76",
+                      "tertiary-fixed-dim": "#4edea3",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "on-surface": "#191c1e",
+                      "on-primary-container": "#7c839b",
+                      "tertiary": "#000000",
+                      "error": "#ba1a1a",
+                      "surface-container": "#eceef0",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-tint": "#565e74",
+                      "background": "#f7f9fb",
+                      "secondary-fixed": "#d3e4fe",
+                      "surface-container-low": "#f2f4f6",
+                      "on-tertiary-container": "#009668",
+                      "tertiary-container": "#002113",
+                      "inverse-surface": "#2d3133",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "primary-container": "#131b2e",
+                      "outline-variant": "#c6c6cd",
+                      "surface-dim": "#d8dadc",
+                      "surface-bright": "#f7f9fb",
+                      "tertiary-fixed": "#6ffbbe",
+                      "primary": "#000000",
+                      "inverse-on-surface": "#eff1f3",
+                      "outline": "#76777d",
+                      "surface-variant": "#e0e3e5",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "on-tertiary-fixed": "#002113",
+                      "error-container": "#ffdad6",
+                      "on-primary-fixed": "#131b2e",
+                      "on-error-container": "#93000a",
+                      "primary-fixed": "#dae2fd",
+                      "on-secondary-container": "#54647a",
+                      "secondary-container": "#d0e1fb",
+                      "primary-fixed-dim": "#bec6e0"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "md": "16px",
+                      "gutter": "20px",
+                      "lg": "24px",
+                      "sm": "8px",
+                      "container-margin": "32px",
+                      "unit": "4px",
+                      "xl": "40px",
+                      "xs": "4px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Geist"],
+                      "label-sm": ["Geist"],
+                      "headline-lg": ["Geist"],
+                      "headline-md": ["Geist"],
+                      "label-md": ["Geist"],
+                      "headline-lg-mobile": ["Geist"],
+                      "body-md": ["Geist"],
+                      "body-lg": ["Geist"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-background text-on-surface overflow-x-hidden">
+<!-- Sidebar Navigation -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant py-lg z-50">
+<div class="px-md mb-xl">
+<h1 class="font-headline-md text-headline-md text-primary font-bold">Private Finance</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">Local-Only Mode</p>
+</div>
+<nav class="flex-1 px-sm space-y-sm">
+<a class="flex items-center gap-md bg-secondary-container text-on-secondary-container rounded-lg px-md py-sm transition-all hover:bg-surface-container-high" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant px-md py-sm transition-all hover:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined">account_balance</span>
+<span class="font-label-md text-label-md">Accounts</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant px-md py-sm transition-all hover:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-md text-label-md">Transactions</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant px-md py-sm transition-all hover:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="font-label-md text-label-md">AI Insights</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant px-md py-sm transition-all hover:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined">shield</span>
+<span class="font-label-md text-label-md">Security</span>
+</a>
+</nav>
+<div class="px-md mt-auto pt-lg border-t border-outline-variant space-y-sm">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-md rounded-lg active:scale-95 duration-150 shadow-sm">
+                Process New Data
+            </button>
+<a class="flex items-center gap-md text-on-surface-variant px-md py-sm hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="flex items-center gap-md text-on-surface-variant px-md py-sm hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 min-h-screen">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-40 bg-surface shadow-sm px-gutter py-md flex justify-between items-center max-w-[1440px] mx-auto">
+<div class="flex items-center gap-md">
+<span class="font-headline-md text-headline-md font-bold text-primary">Private Finance Analyzer</span>
+<div class="flex items-center gap-xs bg-tertiary-container px-sm py-xs rounded-full">
+<span class="material-symbols-outlined text-[14px] text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">shield</span>
+<span class="text-[11px] font-bold uppercase tracking-wider text-on-tertiary-container">100% Local AI Processing</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-sm text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">security</span>
+</button>
+<button class="p-sm text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-secondary-container overflow-hidden border border-outline-variant">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHOSjhO6QMPDrf0N_d2fv7CvVEpmfQCQMDyx5olqzf5KCxQQM2tZb44vKKPyefzehNV7g_Z9Es5dtEaBQCew5rfKfb3I0bwcAIsszTx5UmmMTox6S_8sxbeTtAn7eBzsNDRrXGA1-v0EgXzlGnqBshqwCD8fOq6DsBmQYxMnNp3J9o-GU8t02DvPantO0d9RIsw1gkacnXQWo_1b-MR3j02NQsHN8Tm4K_BYTmatmLR3cV7joqC9wcLEBL1j_x80UO8iHfj5vIB4M"/>
+</div>
+</div>
+</header>
+
+{% block content %}{% endblock %}
+
+<!-- Footer / Trust Indicators -->
+<footer class="mt-xl py-xl px-gutter bg-surface-container-low border-t border-outline-variant">
+<div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-lg">
+<div class="flex items-center gap-xl text-on-surface-variant">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-tertiary-container">signal_wifi_off</span>
+<span class="font-label-sm text-label-sm uppercase font-bold">No Internet Required</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-tertiary-container">database_off</span>
+<span class="font-label-sm text-label-sm uppercase font-bold">No Cloud Storage</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-tertiary-container">stay_primary_portrait</span>
+<span class="font-label-sm text-label-sm uppercase font-bold">Data Never Leaves Device</span>
+</div>
+</div>
+<div class="text-on-surface-variant font-label-sm text-label-sm">
+                    © 2024 Private Finance Analyzer • Open Source Engine • v1.4.2
+                </div>
+</div>
+</footer>
+</main>
+
+<script src="{{ url_for('static', path='js/app.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
