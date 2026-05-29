@@ -168,18 +168,10 @@ ollama run gemma:e2b
 ```bash
 pip install -r requirements.txt
 ```
-
-### Start Backend
-
-```bash
-uvicorn main:app --reload
-```
-
-### Start Frontend
+### Start app
 
 ```bash
-npm install
-npm run dev
+python app.py
 ```
 
 ---
