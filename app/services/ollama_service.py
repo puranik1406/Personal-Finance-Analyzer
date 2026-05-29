@@ -106,7 +106,9 @@ class OllamaService:
             "stream": False,
             "format": "json",
             "options": {
-                "temperature": 0.1  # Low temperature for highly consistent categorization & insights
+                "temperature": 0.1,  # Low temperature for highly consistent categorization & insights
+                "num_gpu": 0,        # Run on CPU to avoid GPU VRAM limits
+                "num_ctx": 2048      # Reduced context window to lower memory footprint
             }
         }
         
@@ -124,6 +126,114 @@ class OllamaService:
         except json.JSONDecodeError as e:
             logger.error(f"Failed to parse JSON response from Gemma. Raw: {raw_response}. Error: {e}")
             raise ValueError(f"The Gemma model failed to output valid JSON. Raw output: {raw_response}")
+
+    def _fallback_category(self, description: str, error: Optional[Exception] = None) -> Dict[str, Any]:
+        fallback_category = "Other"
+        description_lower = description.lower()
+        if any(k in description_lower for k in ["grocery", "market", "food", "restaurant", "cafe", "coffee", "starbucks", "mcdonald", "wholefoods", "uber eats"]):
+            fallback_category = "Food"
+        elif any(k in description_lower for k in ["amazon", "store", "shop", "target", "walmart", "clothing", "nike", "apple"]):
+            fallback_category = "Shopping"
+        elif any(k in description_lower for k in ["uber", "lyft", "gas", "shell", "station", "oil", "flight", "airlines", "transit", "train"]):
+            fallback_category = "Travel"
+        elif any(k in description_lower for k in ["netflix", "spotify", "hulu", "disney", "steam", "playstation", "xbox", "cinema", "theatre"]):
+            fallback_category = "Entertainment"
+        elif any(k in description_lower for k in ["power", "water", "electric", "bill", "phone", "verizon", "t-mobile", "att", "insurance", "rent", "mortgage"]):
+            fallback_category = "Bills"
+        elif any(k in description_lower for k in ["tuition", "school", "course", "udemy", "coursera", "bookstore", "college"]):
+            fallback_category = "Education"
+        elif any(k in description_lower for k in ["hospital", "pharmacy", "medical", "clinic", "cvs", "walgreens", "doctor", "dentist"]):
+            fallback_category = "Healthcare"
+        elif any(k in description_lower for k in ["payroll", "salary", "dep corporate", "direct dep", "dividend", "interest"]):
+            fallback_category = "Income"
+
+        reason = "Fallback rule applied"
+        if error:
+            reason = f"{reason} due to inference failure: {str(error)}"
+
+        return {
+            "category": fallback_category,
+            "confidence": 0.5,
+            "reason": reason
+        }
+
+    def _normalize_category_result(self, res: Dict[str, Any], categories: List[str]) -> Dict[str, Any]:
+        cat = res.get("category", "Other")
+        if cat not in categories:
+            matched = False
+            for c in categories:
+                if c.lower() == str(cat).lower():
+                    res["category"] = c
+                    matched = True
+                    break
+            if not matched:
+                res["category"] = "Other"
+
+        try:
+            res["confidence"] = float(res.get("confidence", 1.0))
+        except:
+            res["confidence"] = 1.0
+
+        res["reason"] = res.get("reason", "Local analysis")
+        return res
+
+    def categorize_transactions_batch(self, transactions: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
+        """
+        Categorize multiple transactions with one Ollama request.
+        """
+        categories = ["Food", "Shopping", "Travel", "Bills", "Entertainment", "Education", "Healthcare", "Income", "Other"]
+        if not transactions:
+            return {}
+
+        compact_transactions = [
+            {
+                "id": str(tx["id"]),
+                "description": tx["description"],
+                "amount": tx["amount"]
+            }
+            for tx in transactions
+        ]
+
+        system_prompt = (
+            "You are a precise transaction classification system. "
+            "Categorize each transaction into exactly one of these categories: "
+            f"{', '.join(categories)}.\n"
+            "You must respond with a JSON object exactly in this schema:\n"
+            "{\n"
+            '  "transactions": [\n'
+            '    {"id": "transaction-id", "category": "Food", "confidence": 0.95, "reason": "Short reason"}\n'
+            "  ]\n"
+            "}"
+        )
+
+        prompt = (
+            "Categorize every transaction in this JSON array:\n"
+            f"{json.dumps(compact_transactions)}\n"
+            f"Return only the raw JSON. Each category must be one of {categories}."
+        )
+
+        try:
+            res = self.generate_json_response(prompt, system_prompt)
+            rows = res.get("transactions", [])
+            results: Dict[str, Dict[str, Any]] = {}
+            for row in rows:
+                tx_id = str(row.get("id", ""))
+                if not tx_id:
+                    continue
+                results[tx_id] = self._normalize_category_result(row, categories)
+
+            for tx in transactions:
+                tx_id = str(tx["id"])
+                if tx_id not in results:
+                    results[tx_id] = self._fallback_category(tx["description"])
+
+            return results
+        except Exception as e:
+            logger.error(f"Failed to batch categorize transactions via local Gemma: {e}. Falling back to local rules.")
+            return {
+                str(tx["id"]): self._fallback_category(tx["description"], e)
+                for tx in transactions
+            }
 
     def categorize_transaction(self, description: str, amount: float) -> Dict[str, Any]:
         """
@@ -152,53 +262,10 @@ class OllamaService:
         
         try:
             res = self.generate_json_response(prompt, system_prompt)
-            # Ensure the category is valid
-            cat = res.get("category", "Other")
-            if cat not in categories:
-                # Direct match case-insensitively
-                matched = False
-                for c in categories:
-                    if c.lower() == cat.lower():
-                        res["category"] = c
-                        matched = True
-                        break
-                if not matched:
-                    res["category"] = "Other"
-            
-            # Clamp confidence
-            try:
-                res["confidence"] = float(res.get("confidence", 1.0))
-            except:
-                res["confidence"] = 1.0
-                
-            return res
+            return self._normalize_category_result(res, categories)
         except Exception as e:
             logger.error(f"Failed to categorize '{description}' via local Gemma: {e}. Falling back to default 'Other'.")
-            # Fallback categorizer based on simple rules to ensure robustness
-            fallback_category = "Other"
-            description_lower = description.lower()
-            if any(k in description_lower for k in ["grocery", "market", "food", "restaurant", "cafe", "coffee", "starbucks", "mcdonald", "wholefoods", "uber eats"]):
-                fallback_category = "Food"
-            elif any(k in description_lower for k in ["amazon", "store", "shop", "target", "walmart", "clothing", "nike", "apple"]):
-                fallback_category = "Shopping"
-            elif any(k in description_lower for k in ["uber", "lyft", "gas", "shell", "station", "oil", "flight", "airlines", "transit", "train"]):
-                fallback_category = "Travel"
-            elif any(k in description_lower for k in ["netflix", "spotify", "hulu", "disney", "steam", "playstation", "xbox", "cinema", "theatre"]):
-                fallback_category = "Entertainment"
-            elif any(k in description_lower for k in ["power", "water", "electric", "bill", "phone", "verizon", "t-mobile", "att", "insurance", "rent", "mortgage"]):
-                fallback_category = "Bills"
-            elif any(k in description_lower for k in ["tuition", "school", "course", "udemy", "coursera", "bookstore", "college"]):
-                fallback_category = "Education"
-            elif any(k in description_lower for k in ["hospital", "pharmacy", "medical", "clinic", "cvs", "walgreens", "doctor", "dentist"]):
-                fallback_category = "Healthcare"
-            elif any(k in description_lower for k in ["payroll", "salary", "dep corporate", "direct dep", "dividend", "interest"]):
-                fallback_category = "Income"
-                
-            return {
-                "category": fallback_category,
-                "confidence": 0.5,
-                "reason": f"Fallback rule applied due to inference failure: {str(e)}"
-            }
+            return self._fallback_category(description, e)
 
     def analyze_finances(self, transactions: List[Dict[str, Any]], summary: Dict[str, Any]) -> AIInsightsResponse:
         """

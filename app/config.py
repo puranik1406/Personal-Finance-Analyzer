@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
-    default_model: str = "gemma:2b"
+    default_model: str = "gemma4:e2b"
     database_url: str = "sqlite:///./finance.db"
     port: int = 5000
     host: str = "127.0.0.1"

@@ -27,14 +27,18 @@ async def categorize_transactions(request: Optional[TransactionCategorizeRequest
         if not txs_to_process:
             return []
             
+        batch_results = ollama_service.categorize_transactions_batch([
+            {
+                "id": tx.id,
+                "description": tx.description,
+                "amount": tx.amount
+            }
+            for tx in txs_to_process
+        ])
+
         updated_transactions = []
-        
         for tx in txs_to_process:
-            # Perform local inference
-            result = ollama_service.categorize_transaction(
-                description=tx.description,
-                amount=tx.amount
-            )
+            result = batch_results.get(tx.id, {})
             
             category = result.get("category", "Other")
             confidence = result.get("confidence", 1.0)

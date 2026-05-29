@@ -5,17 +5,14 @@
 <input type="file" id="fileInput" accept=".csv" class="hidden"/>
 
 <!-- Processing Modal -->
-<div id="processingModal" class="fixed inset-0 bg-black/50 hidden flex-col items-center justify-center z-50 p-gutter">
+<div id="processingModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-gutter">
     <div class="bg-white rounded-xl p-xl shadow-2xl max-w-md w-full">
         <h2 class="font-headline-md text-headline-md mb-lg text-center">Processing Your Financial Data</h2>
         <p class="font-body-md text-body-md text-on-surface-variant text-center mb-lg">Gemma AI is analyzing your transactions locally...</p>
-        
-        <!-- Processing Steps -->
         <div class="space-y-md">
-            <!-- Step 1: Upload -->
-            <div class="processing-step step-processing p-md bg-surface-container-low rounded-lg border-l-4 border-primary">
+            <div class="processing-step p-md bg-surface-container-low rounded-lg border-l-4 border-primary" id="step-0">
                 <div class="flex items-center gap-md">
-                    <span class="material-symbols-outlined step-icon text-primary ai-processing-glow text-[24px]">hourglass_top</span>
+                    <span class="material-symbols-outlined step-icon text-primary text-[24px]">hourglass_top</span>
                     <div class="flex-1">
                         <p class="font-label-md text-label-md font-bold">Uploading File</p>
                         <p class="font-label-sm text-label-sm text-on-surface-variant">Preparing transaction data...</p>
@@ -23,9 +20,7 @@
                     <span class="step-status font-label-sm text-label-sm bg-primary text-on-primary px-sm py-xs rounded-full">Processing...</span>
                 </div>
             </div>
-
-            <!-- Step 2: Categorize -->
-            <div class="processing-step step-pending p-md bg-surface-container-low rounded-lg border-l-4 border-outline-variant">
+            <div class="processing-step p-md bg-surface-container-low rounded-lg border-l-4 border-outline-variant" id="step-1">
                 <div class="flex items-center gap-md">
                     <span class="material-symbols-outlined step-icon text-outline-variant text-[24px]">schedule</span>
                     <div class="flex-1">
@@ -35,9 +30,7 @@
                     <span class="step-status font-label-sm text-label-sm bg-outline-variant text-on-surface px-sm py-xs rounded-full">Pending</span>
                 </div>
             </div>
-
-            <!-- Step 3: Analysis -->
-            <div class="processing-step step-pending p-md bg-surface-container-low rounded-lg border-l-4 border-outline-variant">
+            <div class="processing-step p-md bg-surface-container-low rounded-lg border-l-4 border-outline-variant" id="step-2">
                 <div class="flex items-center gap-md">
                     <span class="material-symbols-outlined step-icon text-outline-variant text-[24px]">schedule</span>
                     <div class="flex-1">
@@ -47,9 +40,7 @@
                     <span class="step-status font-label-sm text-label-sm bg-outline-variant text-on-surface px-sm py-xs rounded-full">Pending</span>
                 </div>
             </div>
-
-            <!-- Step 4: Complete -->
-            <div class="processing-step step-pending p-md bg-surface-container-low rounded-lg border-l-4 border-outline-variant">
+            <div class="processing-step p-md bg-surface-container-low rounded-lg border-l-4 border-outline-variant" id="step-3">
                 <div class="flex items-center gap-md">
                     <span class="material-symbols-outlined step-icon text-outline-variant text-[24px]">schedule</span>
                     <div class="flex-1">
@@ -60,9 +51,8 @@
                 </div>
             </div>
         </div>
-
         <p class="font-label-sm text-label-sm text-on-surface-variant text-center mt-lg">
-            <span class="inline-block animate-pulse">●</span> All processing happens locally on your device
+            <span class="inline-block animate-pulse">&#9679;</span> All processing happens locally on your device
         </p>
     </div>
 </div>
@@ -70,12 +60,12 @@
 <div class="p-gutter max-w-[1440px] mx-auto space-y-lg">
 <!-- Drag & Drop Zone -->
 <section class="grid grid-cols-1 gap-lg">
-<div class="bg-white rounded-xl p-xl border-2 border-dashed border-outline-variant flex flex-col items-center justify-center text-center transition-all hover:border-primary group cursor-pointer">
+<div id="uploadZone" class="bg-white rounded-xl p-xl border-2 border-dashed border-outline-variant flex flex-col items-center justify-center text-center transition-all hover:border-primary group cursor-pointer">
 <div class="w-16 h-16 bg-surface-container rounded-full flex items-center justify-center mb-md group-hover:bg-primary-container transition-colors">
 <span class="material-symbols-outlined text-primary text-display-lg group-hover:text-on-primary-container">upload_file</span>
 </div>
-<h2 class="font-headline-md text-headline-md mb-sm">Drop financial statements here</h2>
-<p class="font-body-md text-body-md text-on-surface-variant max-w-md mx-auto mb-lg">Supports CSV files. Your data is analyzed instantly with Gemma AI locally. No data is sent to the cloud.</p>
+<h2 id="uploadTitle" class="font-headline-md text-headline-md mb-sm">Drop financial statements here</h2>
+<p id="uploadSubtitle" class="font-body-md text-body-md text-on-surface-variant max-w-md mx-auto mb-lg">Supports CSV files. Your data is analyzed instantly with Gemma AI locally. No data is sent to the cloud.</p>
 <div class="flex items-center gap-xl">
 <div class="flex flex-col items-center">
 <span class="material-symbols-outlined text-on-tertiary-container mb-xs">check_circle</span>
@@ -94,37 +84,39 @@
 </div>
 </div>
 </section>
+
 <!-- Summary Row -->
-<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg" id="summarySection">
 <div class="bg-white p-lg rounded-xl shadow-sm border border-[#F1F5F9] transition-transform hover:-translate-y-1">
 <p class="font-label-md text-label-md text-on-surface-variant mb-xs">Total Income</p>
 <div class="flex items-baseline gap-xs">
-<span class="font-headline-md text-headline-md text-on-tertiary-container">$8,450</span>
-<span class="text-[12px] text-on-tertiary-container font-semibold">+12%</span>
+<span id="totalIncome" class="font-headline-md text-headline-md text-on-tertiary-container">$0.00</span>
+<span id="totalIncomeTag" class="text-[12px] text-on-tertiary-container font-semibold"></span>
 </div>
 </div>
 <div class="bg-white p-lg rounded-xl shadow-sm border border-[#F1F5F9] transition-transform hover:-translate-y-1">
 <p class="font-label-md text-label-md text-on-surface-variant mb-xs">Total Expenses</p>
 <div class="flex items-baseline gap-xs">
-<span class="font-headline-md text-headline-md text-error">$3,240</span>
-<span class="text-[12px] text-error font-semibold">-4%</span>
+<span id="totalExpenses" class="font-headline-md text-headline-md text-error">$0.00</span>
+<span id="totalExpensesTag" class="text-[12px] text-error font-semibold"></span>
 </div>
 </div>
 <div class="bg-white p-lg rounded-xl shadow-sm border border-[#F1F5F9] transition-transform hover:-translate-y-1">
 <p class="font-label-md text-label-md text-on-surface-variant mb-xs">Net Savings</p>
 <div class="flex items-baseline gap-xs">
-<span class="font-headline-md text-headline-md text-primary">$5,210</span>
-<span class="text-[12px] text-on-tertiary-container font-semibold">Active</span>
+<span id="netSavings" class="font-headline-md text-headline-md text-primary">$0.00</span>
+<span id="netSavingsTag" class="text-[12px] text-on-tertiary-container font-semibold"></span>
 </div>
 </div>
 <div class="bg-white p-lg rounded-xl shadow-sm border border-[#F1F5F9] transition-transform hover:-translate-y-1">
 <p class="font-label-md text-label-md text-on-surface-variant mb-xs">Largest Category</p>
 <div class="flex items-center gap-sm">
-<span class="material-symbols-outlined text-primary text-[20px]">home</span>
-<span class="font-headline-md text-headline-md">Housing</span>
+<span id="topCategoryIcon" class="material-symbols-outlined text-primary text-[20px]">home</span>
+<span id="topCategory" class="font-headline-md text-headline-md">—</span>
 </div>
 </div>
 </section>
+
 <!-- Analytics Row -->
 <section class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
 <!-- Spending Chart -->
@@ -134,70 +126,43 @@
 <span class="material-symbols-outlined text-outline">more_vert</span>
 </div>
 <div class="relative w-48 h-48 mx-auto mb-lg">
-<!-- Simulated Chart -->
 <div class="absolute inset-0 rounded-full border-[16px] border-primary-container"></div>
-<div class="absolute inset-0 rounded-full border-[16px] border-on-tertiary-container opacity-40 rotate-[120deg] clip-path-polygon"></div>
+<div class="absolute inset-0 rounded-full border-[16px] border-on-tertiary-container opacity-40 rotate-[120deg]"></div>
 <div class="absolute inset-0 flex flex-col items-center justify-center">
 <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Total</span>
-<span class="font-headline-md text-headline-md">$3.2k</span>
+<span id="chartTotal" class="font-headline-md text-headline-md">$0</span>
 </div>
 </div>
-<div class="space-y-sm">
+<div id="legendContainer" class="space-y-sm">
 <div class="flex justify-between items-center text-label-md">
-<div class="flex items-center gap-sm"><div class="w-3 h-3 rounded-full bg-primary-container"></div><span>Housing</span></div>
-<span class="font-bold">45%</span>
-</div>
-<div class="flex justify-between items-center text-label-md">
-<div class="flex items-center gap-sm"><div class="w-3 h-3 rounded-full bg-on-tertiary-container"></div><span>Groceries</span></div>
-<span class="font-bold">22%</span>
-</div>
-<div class="flex justify-between items-center text-label-md">
-<div class="flex items-center gap-sm"><div class="w-3 h-3 rounded-full bg-secondary"></div><span>Utilities</span></div>
-<span class="font-bold">18%</span>
+<div class="flex items-center gap-sm"><div class="w-3 h-3 rounded-full bg-primary-container"></div><span>Upload a file to see breakdown</span></div>
 </div>
 </div>
 </div>
+
 <!-- AI Insights Panel -->
 <div class="lg:col-span-2 bg-primary-container text-on-primary-container p-lg rounded-xl shadow-xl overflow-hidden relative">
 <div class="flex justify-between items-center mb-lg">
 <div class="flex items-center gap-sm">
 <span class="material-symbols-outlined text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">psychology</span>
-<h3 class="font-headline-md text-headline-md text-white">AI Insights <span class="text-tertiary-fixed-dim opacity-60 text-label-md font-normal ml-2">Gemma 2B Local</span></h3>
+<h3 class="font-headline-md text-headline-md text-white">AI Insights <span class="text-tertiary-fixed-dim opacity-60 text-label-md font-normal ml-2">Gemma Local</span></h3>
 </div>
+<div class="flex items-center gap-sm">
+<button id="downloadReportBtn" onclick="downloadReport()" class="hidden bg-white/10 hover:bg-white/20 border border-white/20 text-white font-label-sm text-label-sm px-sm py-xs rounded flex items-center gap-xs transition-colors">
+<span class="material-symbols-outlined text-[16px]">download</span>
+Download Report
+</button>
 <span class="bg-white/10 px-sm py-xs rounded text-[10px] uppercase font-bold tracking-widest text-white/60 border border-white/20">Secure Analysis</span>
 </div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-md h-[280px] overflow-y-auto custom-scrollbar pr-sm">
-<div class="bg-white/5 border border-white/10 p-md rounded-lg hover:bg-white/10 transition-colors">
-<div class="flex items-center gap-sm mb-xs">
-<span class="material-symbols-outlined text-tertiary-fixed-dim text-[18px]">trending_up</span>
-<p class="font-label-md text-label-md font-bold text-white">Spending Pattern</p>
 </div>
-<p class="font-label-sm text-label-sm text-white/70">Coffee shop visits increased by 40% this month. Local model suggests a 'Home Brew' goal to save $120/mo.</p>
-</div>
-<div class="bg-white/5 border border-white/10 p-md rounded-lg hover:bg-white/10 transition-colors">
-<div class="flex items-center gap-sm mb-xs">
-<span class="material-symbols-outlined text-error text-[18px]">warning</span>
-<p class="font-label-md text-label-md font-bold text-white">Unusual Expense</p>
-</div>
-<p class="font-label-sm text-label-sm text-white/70">Detected a $49.99 charge from 'STREAM-PRO' which doesn't match your historical recurring payments.</p>
-</div>
-<div class="bg-white/5 border border-white/10 p-md rounded-lg hover:bg-white/10 transition-colors">
-<div class="flex items-center gap-sm mb-xs">
-<span class="material-symbols-outlined text-tertiary-fixed-dim text-[18px]">subscriptions</span>
-<p class="font-label-md text-label-md font-bold text-white">Subscription Detected</p>
-</div>
-<p class="font-label-sm text-label-sm text-white/70">Found 4 active media subscriptions totaling $64.50/mo. Consider consolidating for better value.</p>
-</div>
-<div class="bg-white/5 border border-white/10 p-md rounded-lg hover:bg-white/10 transition-colors">
-<div class="flex items-center gap-sm mb-xs">
-<span class="material-symbols-outlined text-on-tertiary-container text-[18px]">savings</span>
-<p class="font-label-md text-label-md font-bold text-white">Savings Recommendation</p>
-</div>
-<p class="font-label-sm text-label-sm text-white/70">Moving $400 to your High-Yield account now would optimize interest by $3.40 this period.</p>
+<div id="insightsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-md h-[280px] overflow-y-auto custom-scrollbar pr-sm">
+<div class="bg-white/5 border border-white/10 p-md rounded-lg col-span-2 flex items-center justify-center">
+<p class="font-label-sm text-label-sm text-white/50 text-center">Upload a CSV file to generate AI insights with Gemma</p>
 </div>
 </div>
 </div>
 </section>
+
 <!-- Visual Privacy Diagram -->
 <section class="bg-white p-xl rounded-xl border border-[#F1F5F9] shadow-sm">
 <div class="text-center mb-xl">
@@ -205,16 +170,14 @@
 <p class="font-body-md text-body-md text-on-surface-variant">How we process your data without the internet.</p>
 </div>
 <div class="flex flex-col md:flex-row items-center justify-around gap-lg relative">
-<!-- Step 1 -->
 <div class="flex flex-col items-center z-10">
 <div class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center mb-sm border border-outline-variant">
 <span class="material-symbols-outlined text-primary text-headline-lg">description</span>
 </div>
 <span class="font-label-md text-label-md font-bold">User Files</span>
-<span class="text-[12px] text-on-surface-variant">CSV/PDF Local</span>
+<span class="text-[12px] text-on-surface-variant">CSV Local</span>
 </div>
-<div class="hidden md:block h-px w-24 bg-gradient-to-r from-outline-variant to-primary dashed"></div>
-<!-- Step 2 -->
+<div class="hidden md:block h-px w-24 bg-gradient-to-r from-outline-variant to-primary"></div>
 <div class="flex flex-col items-center z-10">
 <div class="w-20 h-20 rounded-full bg-primary flex items-center justify-center mb-sm border-4 border-primary-fixed shadow-lg ai-processing-glow">
 <span class="material-symbols-outlined text-white text-[32px]">memory</span>
@@ -222,100 +185,40 @@
 <span class="font-label-md text-label-md font-bold text-primary">Local Gemma Model</span>
 <span class="text-[12px] text-on-surface-variant">On-Device Inference</span>
 </div>
-<div class="hidden md:block h-px w-24 bg-gradient-to-r from-primary to-on-tertiary-container dashed"></div>
-<!-- Step 3 -->
+<div class="hidden md:block h-px w-24 bg-gradient-to-r from-primary to-on-tertiary-container"></div>
 <div class="flex flex-col items-center z-10">
 <div class="w-16 h-16 rounded-full bg-on-tertiary-container/10 flex items-center justify-center mb-sm border border-on-tertiary-container">
 <span class="material-symbols-outlined text-on-tertiary-container text-headline-lg">lock</span>
 </div>
 <span class="font-label-md text-label-md font-bold text-on-tertiary-container">Private Insights</span>
-<span class="text-[12px] text-on-surface-variant">Encrypted Browser Storage</span>
+<span class="text-[12px] text-on-surface-variant">Local SQLite Storage</span>
 </div>
 </div>
 </section>
+
 <!-- Transaction Table -->
 <section class="bg-white rounded-xl shadow-sm border border-[#F1F5F9] overflow-hidden">
 <div class="p-lg flex justify-between items-center border-b border-outline-variant">
 <h3 class="font-headline-md text-headline-md">Recent Transactions</h3>
 <div class="flex gap-sm">
-<button class="px-md py-sm rounded-lg border border-outline text-label-md hover:bg-surface-container transition-colors">Export Cleaned CSV</button>
-<button class="px-md py-sm rounded-lg bg-primary text-on-primary text-label-md">Audit All</button>
+<button onclick="exportCSV()" class="px-md py-sm rounded-lg border border-outline text-label-md hover:bg-surface-container transition-colors">Export Cleaned CSV</button>
 </div>
 </div>
 <div class="overflow-x-auto">
 <table class="w-full text-left border-collapse">
 <thead class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider">
 <tr>
+<th class="px-lg py-md">Date</th>
 <th class="px-lg py-md">Description</th>
 <th class="px-lg py-md">Amount</th>
-<th class="px-lg py-md">Category (AI)</th>
+<th class="px-lg py-md">Category (Gemma AI)</th>
 <th class="px-lg py-md">Confidence</th>
-<th class="px-lg py-md text-right">Action</th>
 </tr>
 </thead>
-<tbody class="divide-y divide-outline-variant font-body-md text-body-md">
-<tr class="hover:bg-surface transition-colors">
-<td class="px-lg py-md font-medium">WHOLEFOODS MARKET #1294</td>
-<td class="px-lg py-md text-error">-$142.30</td>
-<td class="px-lg py-md">
-<span class="flex items-center gap-xs">
-<span class="material-symbols-outlined text-[16px] text-primary">shopping_cart</span>
-Groceries
-</span>
-</td>
-<td class="px-lg py-md">
-<span class="bg-on-tertiary-container/20 text-on-tertiary-container px-sm py-xs rounded-full text-[11px] font-bold">98% Match</span>
-</td>
-<td class="px-lg py-md text-right">
-<button class="text-outline hover:text-primary"><span class="material-symbols-outlined">edit</span></button>
-</td>
-</tr>
-<tr class="hover:bg-surface transition-colors">
-<td class="px-lg py-md font-medium">NETFLIX.COM PAYMENT</td>
-<td class="px-lg py-md text-error">-$19.99</td>
-<td class="px-lg py-md">
-<span class="flex items-center gap-xs">
-<span class="material-symbols-outlined text-[16px] text-primary">play_circle</span>
-Entertainment
-</span>
-</td>
-<td class="px-lg py-md">
-<span class="bg-on-tertiary-container/20 text-on-tertiary-container px-sm py-xs rounded-full text-[11px] font-bold">100% Match</span>
-</td>
-<td class="px-lg py-md text-right">
-<button class="text-outline hover:text-primary"><span class="material-symbols-outlined">edit</span></button>
-</td>
-</tr>
-<tr class="hover:bg-surface transition-colors">
-<td class="px-lg py-md font-medium">PAYROLL DEP CORPORATE</td>
-<td class="px-lg py-md text-on-tertiary-container">+$4,225.00</td>
-<td class="px-lg py-md">
-<span class="flex items-center gap-xs">
-<span class="material-symbols-outlined text-[16px] text-primary">payments</span>
-Salary
-</span>
-</td>
-<td class="px-lg py-md">
-<span class="bg-on-tertiary-container/20 text-on-tertiary-container px-sm py-xs rounded-full text-[11px] font-bold">95% Match</span>
-</td>
-<td class="px-lg py-md text-right">
-<button class="text-outline hover:text-primary"><span class="material-symbols-outlined">edit</span></button>
-</td>
-</tr>
-<tr class="hover:bg-surface transition-colors">
-<td class="px-lg py-md font-medium">SHELL OIL STATION #44</td>
-<td class="px-lg py-md text-error">-$64.12</td>
-<td class="px-lg py-md">
-<span class="flex items-center gap-xs">
-<span class="material-symbols-outlined text-[16px] text-primary">directions_car</span>
-Transport
-</span>
-</td>
-<td class="px-lg py-md">
-<span class="bg-secondary/20 text-secondary px-sm py-xs rounded-full text-[11px] font-bold">82% Match</span>
-</td>
-<td class="px-lg py-md text-right">
-<button class="text-outline hover:text-primary"><span class="material-symbols-outlined">edit</span></button>
+<tbody id="txTableBody" class="divide-y divide-outline-variant font-body-md text-body-md">
+<tr>
+<td colspan="5" class="px-lg py-xl text-center text-on-surface-variant font-label-md text-label-md">
+Upload a CSV file to see transactions
 </td>
 </tr>
 </tbody>
@@ -327,346 +230,389 @@ Transport
 
 {% block scripts %}
 <script>
-    // Robust DOM element selectors using semantic matching
-    function getCardElements(labelText) {
-        const cards = document.querySelectorAll('.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 > div');
-        for (const card of cards) {
-            const label = card.querySelector('p');
-            if (label && label.textContent.trim().toLowerCase() === labelText.toLowerCase()) {
-                // Find target elements inside the card
-                const valEl = card.querySelector('.font-headline-md');
-                const subEl = card.querySelector('.flex.items-baseline span:nth-child(2), .flex.items-center span:nth-child(2)');
-                const iconEl = card.querySelector('.flex.items-center span:first-child');
-                return { value: valEl, subText: subEl, icon: iconEl };
-            }
-        }
-        return null;
-    }
+    // ---- State ----
+    let currentInsights = null;
+    let currentSummary = null;
+    let currentTransactions = [];
 
-    const dropZone = document.querySelector('.border-dashed');
-    const tbody = document.querySelector('table tbody');
-    const insightsContainer = document.querySelector('.custom-scrollbar');
-    const chartTotal = document.querySelector('.relative.w-48.h-48.mx-auto span.font-headline-md');
-    const legendContainer = document.querySelector('.lg\\:col-span-1.bg-white .space-y-sm');
+    // ---- DOM refs ----
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+    const processingModal = document.getElementById('processingModal');
+    const txTableBody = document.getElementById('txTableBody');
+    const insightsContainer = document.getElementById('insightsContainer');
+    const chartTotal = document.getElementById('chartTotal');
+    const legendContainer = document.getElementById('legendContainer');
     const statusText = document.querySelector('header span.uppercase');
     const sidebarStatus = document.querySelector('aside p');
+    const downloadReportBtn = document.getElementById('downloadReportBtn');
 
-    // Create file input element dynamically
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = '.csv';
-    fileInput.className = 'hidden';
-    document.body.appendChild(fileInput);
+    // ---- Category icons ----
+    const categoryIcons = {
+        "Food": "shopping_cart", "Shopping": "storefront", "Travel": "directions_car",
+        "Bills": "receipt", "Entertainment": "play_circle", "Education": "school",
+        "Healthcare": "medical_services", "Income": "payments", "Other": "help"
+    };
 
-    // Click handler for upload card
-    if (dropZone) {
-        dropZone.style.cursor = 'pointer';
-        dropZone.addEventListener('click', () => fileInput.click());
+    // ---- Upload zone events ----
+    uploadZone.addEventListener('click', () => fileInput.click());
+    uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('border-primary', 'bg-blue-50');
+    });
+    uploadZone.addEventListener('dragleave', () => {
+        uploadZone.classList.remove('border-primary', 'bg-blue-50');
+    });
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('border-primary', 'bg-blue-50');
+        const file = e.dataTransfer.files[0];
+        if (file) handleFileUpload(file);
+    });
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) { handleFileUpload(file); e.target.value = ''; }
+    });
 
-        // Drag and drop events
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('bg-primary-container', 'border-primary');
-        });
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('bg-primary-container', 'border-primary');
-        });
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('bg-primary-container', 'border-primary');
-            if (e.dataTransfer.files.length > 0) {
-                handleFileUpload(e.dataTransfer.files[0]);
+    // ---- Processing modal helpers ----
+    function showModal() {
+        processingModal.classList.remove('hidden');
+        processingModal.classList.add('flex');
+    }
+    function hideModal() {
+        processingModal.classList.add('hidden');
+        processingModal.classList.remove('flex');
+    }
+    function setStep(index, status) {
+        const step = document.getElementById('step-' + index);
+        if (!step) return;
+        const icon = step.querySelector('.step-icon');
+        const badge = step.querySelector('.step-status');
+        step.className = 'processing-step p-md bg-surface-container-low rounded-lg border-l-4 ' +
+            (status === 'done' ? 'border-on-tertiary-container' : status === 'active' ? 'border-primary' : 'border-outline-variant');
+        if (icon) icon.textContent = status === 'done' ? 'check_circle' : status === 'active' ? 'hourglass_top' : 'schedule';
+        if (badge) {
+            badge.textContent = status === 'done' ? 'Complete' : status === 'active' ? 'Processing...' : 'Pending';
+            badge.className = 'step-status font-label-sm text-label-sm px-sm py-xs rounded-full ' +
+                (status === 'done' ? 'bg-on-tertiary-container text-white' : status === 'active' ? 'bg-primary text-on-primary' : 'bg-outline-variant text-on-surface');
+        }
+    }
+
+    // ---- Main upload flow ----
+    async function handleFileUpload(file) {
+        if (!file.name.toLowerCase().endsWith('.csv')) {
+            showNotification('Only CSV files are supported', 'error');
+            return;
+        }
+
+        showModal();
+        setStep(0, 'active'); setStep(1, 'pending'); setStep(2, 'pending'); setStep(3, 'pending');
+
+        try {
+            // Step 1: Upload
+            const formData = new FormData();
+            formData.append('file', file);
+            const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
+            if (!uploadRes.ok) {
+                const err = await uploadRes.json().catch(() => ({}));
+                throw new Error(err.detail || 'Upload failed');
             }
+            const transactions = await uploadRes.json();
+            currentTransactions = transactions;
+            renderTransactions(transactions);
+            setStep(0, 'done');
+
+            // Step 2: Categorize with Gemma
+            setStep(1, 'active');
+            const catRes = await fetch('/api/categorize', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+            if (catRes.ok) {
+                const categorized = await catRes.json();
+                currentTransactions = categorized;
+                renderTransactions(categorized);
+            }
+            await updateSummary();
+            setStep(1, 'done');
+
+            // Step 3: AI Insights with Gemma
+            setStep(2, 'active');
+            await generateInsights();
+            setStep(2, 'done');
+
+            // Step 4: Done
+            setStep(3, 'active');
+            await new Promise(r => setTimeout(r, 600));
+            setStep(3, 'done');
+
+            hideModal();
+            showNotification('File processed successfully with Gemma AI!', 'success');
+        } catch (err) {
+            hideModal();
+            showNotification(err.message || 'An error occurred during processing', 'error');
+            console.error('Upload error:', err);
+        }
+    }
+
+    // ---- Render transactions ----
+    function renderTransactions(txs) {
+        if (!txTableBody) return;
+        if (!txs || txs.length === 0) {
+            txTableBody.innerHTML = '<tr><td colspan="5" class="px-lg py-xl text-center text-on-surface-variant font-label-md text-label-md">No transactions found</td></tr>';
+            return;
+        }
+        txTableBody.innerHTML = '';
+        txs.forEach(tx => {
+            const isIncome = tx.amount > 0;
+            const amountClass = isIncome ? 'text-on-tertiary-container' : 'text-error';
+            const prefix = isIncome ? '+$' : '-$';
+            const amountStr = prefix + Math.abs(tx.amount).toFixed(2);
+            const icon = categoryIcons[tx.category] || 'help';
+            const confidencePct = Math.round((tx.confidence || 1) * 100);
+            const confClass = confidencePct >= 80 ? 'bg-on-tertiary-container/20 text-on-tertiary-container' : 'bg-secondary/20 text-secondary';
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-surface transition-colors';
+            tr.innerHTML =
+                '<td class="px-lg py-md text-on-surface-variant text-label-sm">' + (tx.date || '—') + '</td>' +
+                '<td class="px-lg py-md font-medium">' + escapeHtml(tx.description) + '</td>' +
+                '<td class="px-lg py-md ' + amountClass + '">' + amountStr + '</td>' +
+                '<td class="px-lg py-md"><span class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px] text-primary">' + icon + '</span>' + escapeHtml(tx.category) + '</span></td>' +
+                '<td class="px-lg py-md"><span class="' + confClass + ' px-sm py-xs rounded-full text-[11px] font-bold">' + confidencePct + '% Match</span></td>';
+            txTableBody.appendChild(tr);
         });
     }
 
-    // Initialize local AI status on page load
+    // ---- Update summary cards ----
+    async function updateSummary() {
+        try {
+            const res = await fetch('/api/summary');
+            if (!res.ok) return;
+            const s = await res.json();
+            currentSummary = s;
+
+            document.getElementById('totalIncome').textContent = '$' + s.total_income.toLocaleString(undefined, { minimumFractionDigits: 2 });
+            document.getElementById('totalExpenses').textContent = '$' + s.total_expenses.toLocaleString(undefined, { minimumFractionDigits: 2 });
+            document.getElementById('netSavings').textContent = '$' + s.savings.toLocaleString(undefined, { minimumFractionDigits: 2 });
+            document.getElementById('netSavingsTag').textContent = s.savings >= 0 ? 'Surplus' : 'Deficit';
+            document.getElementById('topCategory').textContent = s.top_spending_category || '—';
+            document.getElementById('topCategoryIcon').textContent = categoryIcons[s.top_spending_category] || 'home';
+
+            if (chartTotal) chartTotal.textContent = '$' + (s.total_expenses / 1000).toFixed(1) + 'k';
+
+            if (legendContainer && s.category_wise_totals) {
+                const spending = Object.entries(s.category_wise_totals)
+                    .filter(([c]) => c !== 'Income')
+                    .sort((a, b) => b[1] - a[1]);
+                const total = spending.reduce((sum, [, v]) => sum + v, 0) || 1;
+                const colors = ['bg-primary-container', 'bg-on-tertiary-container', 'bg-secondary', 'bg-error', 'bg-secondary-container'];
+                legendContainer.innerHTML = '';
+                spending.forEach(([cat, val], i) => {
+                    const pct = Math.round((val / total) * 100);
+                    const div = document.createElement('div');
+                    div.className = 'flex justify-between items-center text-label-md';
+                    div.innerHTML = '<div class="flex items-center gap-sm"><div class="w-3 h-3 rounded-full ' + colors[i % colors.length] + '"></div><span>' + escapeHtml(cat) + '</span></div><span class="font-bold">' + pct + '%</span>';
+                    legendContainer.appendChild(div);
+                });
+            }
+        } catch (e) {
+            console.error('Summary update failed:', e);
+        }
+    }
+
+    // ---- Generate AI insights ----
+    async function generateInsights() {
+        try {
+            const res = await fetch('/api/analyze', { method: 'POST' });
+            if (!res.ok) return;
+            const insights = await res.json();
+            currentInsights = insights;
+            renderInsights(insights);
+            if (downloadReportBtn) downloadReportBtn.classList.remove('hidden');
+        } catch (e) {
+            console.error('Insights generation failed:', e);
+        }
+    }
+
+    function renderInsights(insights) {
+        if (!insightsContainer) return;
+        insightsContainer.innerHTML =
+            '<div class="bg-white/5 border border-white/10 p-md rounded-lg hover:bg-white/10 transition-colors">' +
+                '<div class="flex items-center gap-sm mb-xs"><span class="material-symbols-outlined text-tertiary-fixed-dim text-[18px]">trending_up</span><p class="font-label-md text-label-md font-bold text-white">Spending Pattern</p></div>' +
+                '<p class="font-label-sm text-label-sm text-white/70">' + escapeHtml(insights.spending_pattern) + '</p>' +
+            '</div>' +
+            '<div class="bg-white/5 border border-white/10 p-md rounded-lg hover:bg-white/10 transition-colors">' +
+                '<div class="flex items-center gap-sm mb-xs"><span class="material-symbols-outlined text-error text-[18px]">warning</span><p class="font-label-md text-label-md font-bold text-white">Unusual Expense</p></div>' +
+                '<p class="font-label-sm text-label-sm text-white/70">' + escapeHtml(insights.unusual_spending) + '</p>' +
+            '</div>' +
+            '<div class="bg-white/5 border border-white/10 p-md rounded-lg hover:bg-white/10 transition-colors">' +
+                '<div class="flex items-center gap-sm mb-xs"><span class="material-symbols-outlined text-tertiary-fixed-dim text-[18px]">subscriptions</span><p class="font-label-md text-label-md font-bold text-white">Active Subscriptions</p></div>' +
+                '<p class="font-label-sm text-label-sm text-white/70">' + (insights.subscriptions && insights.subscriptions.length > 0 ? escapeHtml(insights.subscriptions.join(', ')) : 'No recurring subscriptions detected.') + '</p>' +
+            '</div>' +
+            '<div class="bg-white/5 border border-white/10 p-md rounded-lg hover:bg-white/10 transition-colors">' +
+                '<div class="flex items-center gap-sm mb-xs"><span class="material-symbols-outlined text-on-tertiary-container text-[18px]">savings</span><p class="font-label-md text-label-md font-bold text-white">Cost-Saving Advice</p></div>' +
+                '<p class="font-label-sm text-label-sm text-white/70">' + escapeHtml(insights.cost_saving) + '</p>' +
+            '</div>';
+    }
+
+    // ---- Download report ----
+    function downloadReport() {
+        if (!currentInsights || !currentSummary) {
+            showNotification('No report data available yet. Upload a file first.', 'error');
+            return;
+        }
+        const now = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        const subs = currentInsights.subscriptions && currentInsights.subscriptions.length > 0
+            ? currentInsights.subscriptions.map(s => '  - ' + s).join('\n')
+            : '  None detected';
+
+        const report = [
+            '================================================',
+            '   PRIVATE FINANCE ANALYZER — AI REPORT',
+            '   Generated: ' + now,
+            '   Powered by: Gemma (Local Inference via Ollama)',
+            '   Privacy: 100% Local — No data left your device',
+            '================================================',
+            '',
+            '--- FINANCIAL SUMMARY ---',
+            'Total Income:    $' + (currentSummary.total_income || 0).toFixed(2),
+            'Total Expenses:  $' + (currentSummary.total_expenses || 0).toFixed(2),
+            'Net Savings:     $' + (currentSummary.savings || 0).toFixed(2),
+            'Top Category:    ' + (currentSummary.top_spending_category || '—'),
+            '',
+            '--- CATEGORY BREAKDOWN ---',
+        ];
+
+        if (currentSummary.category_wise_totals) {
+            Object.entries(currentSummary.category_wise_totals)
+                .sort((a, b) => b[1] - a[1])
+                .forEach(([cat, val]) => {
+                    report.push('  ' + cat.padEnd(16) + '$' + val.toFixed(2));
+                });
+        }
+
+        report.push('', '--- GEMMA AI INSIGHTS ---', '');
+        report.push('SPENDING PATTERN:', currentInsights.spending_pattern, '');
+        report.push('UNUSUAL SPENDING:', currentInsights.unusual_spending, '');
+        report.push('SUBSCRIPTIONS DETECTED:', subs, '');
+        report.push('COST-SAVING ADVICE:', currentInsights.cost_saving, '');
+        report.push('SUMMARY:', currentInsights.summary || '', '');
+
+        if (currentTransactions.length > 0) {
+            report.push('--- TRANSACTIONS (' + currentTransactions.length + ') ---');
+            report.push('Date            Description                          Amount       Category');
+            report.push('─'.repeat(80));
+            currentTransactions.forEach(tx => {
+                const date = (tx.date || '—').padEnd(16);
+                const desc = (tx.description || '').substring(0, 36).padEnd(37);
+                const amt = ((tx.amount >= 0 ? '+$' : '-$') + Math.abs(tx.amount).toFixed(2)).padEnd(13);
+                const cat = tx.category || 'Other';
+                report.push(date + desc + amt + cat);
+            });
+        }
+
+        report.push('', '================================================');
+        report.push('End of Report — All analysis performed locally.');
+        report.push('================================================');
+
+        const blob = new Blob([report.join('\n')], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'finance-report-' + new Date().toISOString().slice(0, 10) + '.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showNotification('Report downloaded!', 'success');
+    }
+
+    // ---- Export CSV ----
+    function exportCSV() {
+        if (!currentTransactions || currentTransactions.length === 0) {
+            showNotification('No transactions to export. Upload a file first.', 'error');
+            return;
+        }
+        const rows = [['Date', 'Description', 'Amount', 'Category', 'Confidence', 'Reason']];
+        currentTransactions.forEach(tx => {
+            rows.push([tx.date || '', tx.description, tx.amount, tx.category, tx.confidence, tx.reason || '']);
+        });
+        const csv = rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'transactions-categorized-' + new Date().toISOString().slice(0, 10) + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showNotification('CSV exported!', 'success');
+    }
+
+    // ---- Notification ----
+    function showNotification(message, type) {
+        const n = document.createElement('div');
+        n.className = 'fixed bottom-lg right-gutter p-md rounded-lg shadow-lg font-body-md text-white z-50 ' +
+            (type === 'success' ? 'bg-on-tertiary-container' : 'bg-error');
+        n.textContent = message;
+        document.body.appendChild(n);
+        setTimeout(() => n.remove(), 4000);
+    }
+
+    // ---- Escape HTML ----
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // ---- Check Ollama/Gemma status on load ----
     async function checkAIStatus() {
         try {
             const res = await fetch('/api/status');
             if (res.ok) {
                 const data = await res.json();
                 if (data.connected && data.detected_model) {
-                    if (statusText) statusText.textContent = `Local AI Active: ${data.detected_model}`;
-                    if (sidebarStatus) sidebarStatus.textContent = `Local Mode (${data.detected_model})`;
+                    if (statusText) statusText.textContent = 'Local AI Active: ' + data.detected_model;
+                    if (sidebarStatus) sidebarStatus.textContent = 'Local Mode (' + data.detected_model + ')';
                 } else {
-                    if (statusText) statusText.textContent = "Offline (Local Fallback Ready)";
-                    if (sidebarStatus) sidebarStatus.textContent = "Local Offline-Rule Mode";
+                    if (statusText) statusText.textContent = 'Offline (Fallback Rules Active)';
+                    if (sidebarStatus) sidebarStatus.textContent = 'Local Offline-Rule Mode';
                 }
             }
         } catch (e) {
-            console.warn("Could not connect to status API, using offline fallback.", e);
-            if (statusText) statusText.textContent = "Local Fallback Mode";
+            if (statusText) statusText.textContent = 'Local Fallback Mode';
         }
     }
     checkAIStatus();
 
-    // Map categories to Google Material Icons for gorgeous rendering
-    const categoryIcons = {
-        "Food": "shopping_cart",
-        "Shopping": "storefront",
-        "Travel": "directions_car",
-        "Bills": "receipt",
-        "Entertainment": "play_circle",
-        "Education": "school",
-        "Healthcare": "medical_services",
-        "Income": "payments",
-        "Other": "help"
-    };
-
-    function renderTransactions(txs) {
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        
-        txs.forEach(tx => {
-            const tr = document.createElement('tr');
-            tr.className = 'hover:bg-surface transition-colors';
-            
-            const isIncome = tx.amount > 0;
-            const amountClass = isIncome ? 'text-on-tertiary-container' : 'text-error';
-            const amountPrefix = isIncome ? '+$' : '-$';
-            const amountStr = `${amountPrefix}${Math.abs(tx.amount).toFixed(2)}`;
-            
-            const icon = categoryIcons[tx.category] || "help";
-            
-            tr.innerHTML = `
-                <td class="px-lg py-md font-medium">${tx.description}</td>
-                <td class="px-lg py-md ${amountClass}">${amountStr}</td>
-                <td class="px-lg py-md">
-                    <span class="flex items-center gap-xs">
-                        <span class="material-symbols-outlined text-[16px] text-primary">${icon}</span>
-                        ${tx.category}
-                    </span>
-                </td>
-                <td class="px-lg py-md">
-                    <span class="${tx.confidence >= 0.8 ? 'bg-on-tertiary-container/20 text-on-tertiary-container' : 'bg-secondary/20 text-secondary'} px-sm py-xs rounded-full text-[11px] font-bold">
-                        ${Math.round(tx.confidence * 100)}% Match
-                    </span>
-                </td>
-                <td class="px-lg py-md text-right">
-                    <button class="text-outline hover:text-primary" onclick="editTransactionCategory('${tx.id}')">
-                        <span class="material-symbols-outlined">edit</span>
-                    </button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    async function handleFileUpload(file) {
-        if (!file) return;
-        
-        // Show uploading state in the drag zone
-        const h2 = dropZone.querySelector('h2');
-        const p = dropZone.querySelector('p');
-        const originalH2 = h2 ? h2.textContent : "";
-        const originalP = p ? p.textContent : "";
-        
-        if (h2) h2.textContent = "Uploading Statement...";
-        if (p) p.textContent = `Reading ${file.name} locally...`;
-        
-        try {
-            const formData = new FormData();
-            formData.append('file', file);
-            
-            // 1. Upload the CSV file
-            const uploadRes = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData
-            });
-            
-            if (!uploadRes.ok) {
-                const err = await uploadRes.json();
-                alert(err.detail || "Failed to parse CSV file.");
-                return;
-            }
-            
-            const transactions = await uploadRes.json();
-            renderTransactions(transactions);
-            
-            // Update drag & drop status
-            if (h2) h2.textContent = "Statement Parsed!";
-            if (p) p.textContent = `Analyzing ${transactions.length} transactions via local Gemma...`;
-            
-            // 2. Run Transaction Categorization
-            const catRes = await fetch('/api/categorize', {
-                method: 'POST'
-            });
-            
-            if (catRes.ok) {
-                const categorizedTxs = await catRes.json();
-                renderTransactions(categorizedTxs);
-            }
-            
-            // 3. Update Summary Cards & Charts
-            await updateSummary();
-            
-            // 4. Generate AI insights
-            if (h2) h2.textContent = "Generating Local AI Insights...";
-            await generateInsights();
-            
-            // Reset drag zone
-            if (h2) h2.textContent = originalH2;
-            if (p) p.textContent = originalP;
-            
-        } catch (e) {
-            console.error(e);
-            alert("An error occurred during local processing. Check console log for details.");
-            if (h2) h2.textContent = originalH2;
-            if (p) p.textContent = originalP;
-        }
-    }
-
-    async function updateSummary() {
+    // ---- Load existing data on page load ----
+    async function loadExistingData() {
         try {
             const res = await fetch('/api/summary');
             if (!res.ok) return;
-            const summary = await res.json();
-            
-            // Update Card values
-            const incomeCard = getCardElements("Total Income");
-            if (incomeCard && incomeCard.value) {
-                incomeCard.value.textContent = `$${summary.total_income.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-                if (incomeCard.subText) incomeCard.subText.textContent = "Verified";
-            }
-            
-            const expenseCard = getCardElements("Total Expenses");
-            if (expenseCard && expenseCard.value) {
-                expenseCard.value.textContent = `$${summary.total_expenses.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-                if (expenseCard.subText) expenseCard.subText.textContent = "Verified";
-            }
-            
-            const savingsCard = getCardElements("Net Savings");
-            if (savingsCard && savingsCard.value) {
-                savingsCard.value.textContent = `$${summary.savings.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-                if (savingsCard.subText) {
-                    savingsCard.subText.textContent = summary.savings >= 0 ? "Surplus" : "Deficit";
-                    savingsCard.subText.className = summary.savings >= 0 ? "text-[12px] text-on-tertiary-container font-semibold" : "text-[12px] text-error font-semibold";
+            const s = await res.json();
+            if (s.total_income === 0 && s.total_expenses === 0) return;
+            currentSummary = s;
+
+            const txRes = await fetch('/api/categorize', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+            if (txRes.ok) {
+                const txs = await txRes.json();
+                if (txs.length > 0) {
+                    currentTransactions = txs;
+                    renderTransactions(txs);
+                    await updateSummary();
                 }
             }
-            
-            const categoryCard = getCardElements("Largest Category");
-            if (categoryCard && categoryCard.value) {
-                categoryCard.value.textContent = summary.top_spending_category;
-                const icon = categoryIcons[summary.top_spending_category] || "home";
-                if (categoryCard.icon) categoryCard.icon.textContent = icon;
-            }
-            
-            // Update chart total
-            if (chartTotal) {
-                chartTotal.textContent = `$${(summary.total_expenses / 1000).toFixed(1)}k`;
-            }
-            
-            // Update legends list
-            if (legendContainer && summary.category_wise_totals) {
-                legendContainer.innerHTML = '';
-                
-                // Exclude 'Income' and compute total spending for percentage
-                const spendingTxs = Object.entries(summary.category_wise_totals)
-                    .filter(([cat]) => cat !== "Income" && cat !== "Other")
-                    .sort((a, b) => b[1] - a[1]);
-                    
-                const totalSpend = spendingTxs.reduce((sum, [_, val]) => sum + val, 0) || 1;
-                
-                // Predefined colors for legends
-                const colors = ["bg-primary-container", "bg-on-tertiary-container", "bg-secondary", "bg-error", "bg-secondary-container"];
-                
-                spendingTxs.forEach(([cat, val], index) => {
-                    const percentage = Math.round((val / totalSpend) * 100);
-                    const color = colors[index % colors.length];
-                    
-                    const div = document.createElement('div');
-                    div.className = 'flex justify-between items-center text-label-md';
-                    div.innerHTML = `
-                        <div class="flex items-center gap-sm">
-                            <div class="w-3 h-3 rounded-full ${color}"></div>
-                            <span>${cat}</span>
-                        </div>
-                        <span class="font-bold">${percentage}%</span>
-                    `;
-                    legendContainer.appendChild(div);
-                });
+
+            const insRes = await fetch('/api/analyze');
+            if (insRes.ok) {
+                const insights = await insRes.json();
+                currentInsights = insights;
+                renderInsights(insights);
+                if (downloadReportBtn) downloadReportBtn.classList.remove('hidden');
             }
         } catch (e) {
-            console.error("Failed to update summary UI:", e);
+            // No existing data, that's fine
         }
     }
-
-    async function generateInsights() {
-        if (!insightsContainer) return;
-        
-        try {
-            const res = await fetch('/api/analyze', { method: 'POST' });
-            if (!res.ok) return;
-            const insights = await res.json();
-            
-            renderInsights(insights);
-        } catch (e) {
-            console.error("Failed to generate insights UI:", e);
-        }
-    }
-
-    function renderInsights(insights) {
-        if (!insightsContainer) return;
-        
-        insightsContainer.innerHTML = `
-            <div class="bg-white/5 border border-white/10 p-md rounded-lg hover:bg-white/10 transition-colors">
-                <div class="flex items-center gap-sm mb-xs">
-                    <span class="material-symbols-outlined text-tertiary-fixed-dim text-[18px]">trending_up</span>
-                    <p class="font-label-md text-label-md font-bold text-white">Spending Pattern</p>
-                </div>
-                <p class="font-label-sm text-label-sm text-white/70">${insights.spending_pattern}</p>
-            </div>
-            
-            <div class="bg-white/5 border border-white/10 p-md rounded-lg hover:bg-white/10 transition-colors">
-                <div class="flex items-center gap-sm mb-xs">
-                    <span class="material-symbols-outlined text-error text-[18px]">warning</span>
-                    <p class="font-label-md text-label-md font-bold text-white">Unusual Expense</p>
-                </div>
-                <p class="font-label-sm text-label-sm text-white/70">${insights.unusual_spending}</p>
-            </div>
-            
-            <div class="bg-white/5 border border-white/10 p-md rounded-lg hover:bg-white/10 transition-colors">
-                <div class="flex items-center gap-sm mb-xs">
-                    <span class="material-symbols-outlined text-tertiary-fixed-dim text-[18px]">subscriptions</span>
-                    <p class="font-label-md text-label-md font-bold text-white">Active Subscriptions</p>
-                </div>
-                <p class="font-label-sm text-label-sm text-white/70">
-                    ${insights.subscriptions.length > 0 
-                        ? `Detected subscriptions: ${insights.subscriptions.join(', ')}`
-                        : 'No recurring media subscriptions explicitly flagged by local Gemma.'}
-                </p>
-            </div>
-            
-            <div class="bg-white/5 border border-white/10 p-md rounded-lg hover:bg-white/10 transition-colors">
-                <div class="flex items-center gap-sm mb-xs">
-                    <span class="material-symbols-outlined text-on-tertiary-container text-[18px]">savings</span>
-                    <p class="font-label-md text-label-md font-bold text-white">Cost-Saving Advice</p>
-                </div>
-                <p class="font-label-sm text-label-sm text-white/70">${insights.cost_saving}</p>
-            </div>
-        `;
-    }
-
-    // Modal or Prompts to update a transaction's category manually
-    window.editTransactionCategory = async function(txId) {
-        const categories = ["Food", "Shopping", "Travel", "Bills", "Entertainment", "Education", "Healthcare", "Income", "Other"];
-        const newCat = prompt(`Enter new category (${categories.join(', ')}):`);
-        if (!newCat) return;
-        
-        // Match user input to exact category casing
-        const matchedCat = categories.find(c => c.toLowerCase() === newCat.trim().toLowerCase());
-        if (!matchedCat) {
-            alert(`Invalid category. Please select from: ${categories.join(', ')}`);
-            return;
-        }
-        
-        try {
-            // We can directly call a manual update if desired or simulate locally
-            alert(`Category updated to ${matchedCat} successfully! (Local UI simulated)`);
-        } catch (e) {
-            console.error(e);
-        }
-    }
+    loadExistingData();
 </script>
 {% endblock %}

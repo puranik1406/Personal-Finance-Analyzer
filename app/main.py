@@ -50,7 +50,7 @@ async def read_index(request: Request):
     """
     Serves the beautiful index.html page parsed via Jinja2 template engine.
     """
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(request, "index.html")
 
 @app.get("/api/status")
 async def get_ollama_status():
